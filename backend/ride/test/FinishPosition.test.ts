@@ -13,6 +13,7 @@ import UpdatePosition from "../src/application/usecase/UpdatePosition";
 import { PositionRepositoryDatabase } from "../src/infra/repository/PositionRepository";
 import UpdatePosition2 from "../src/application/usecase/UpdatePosition";
 import FinishPosition from "../src/application/usecase/FinishPosition";
+import { PaymentGatewayMemory } from "../src/infra/gateway/PaymentGateway";
 
 let signup: Signup;
 let getAccount: GetAccount;
@@ -29,6 +30,7 @@ beforeEach(() => {
 	Registry.getInstance().provide("rideRepository", new RideRepositoryDatabase());
 	Registry.getInstance().provide("positionRepository", new PositionRepositoryDatabase());
 	Registry.getInstance().provide("mailerGateway", new MailerGatewayMemory());
+	Registry.getInstance().provide("paymentGateway", new PaymentGatewayMemory());
 	signup = new Signup();
 	getAccount = new GetAccount();
 	requestRide = new RequestRide();
@@ -88,10 +90,10 @@ test("Deve finalizar uma corrida", async function () {
 	await updatePosition.execute(inputUpdatePosition2);
 	const inputFinishPosition = {
 		rideId: outputRequestRide.rideId,
+		creditCardToken: "abc123",
 	}
 	await finishPosition.execute(inputFinishPosition);
 	const outputGetRide = await getRide.execute(outputRequestRide.rideId);
-	console.log(outputGetRide);
 	expect(outputGetRide.status).toBe("completed");
 	expect(outputGetRide.distance).toBe(10);
 	expect(outputGetRide.fare).toBe(21);

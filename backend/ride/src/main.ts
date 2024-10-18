@@ -6,6 +6,7 @@ import { Registry } from "./infra/di/DI";
 import { PgPromiseAdapter } from "./infra/database/DatabaseConnection";
 import { ExpressAdapter } from "./infra/http/HttpServer";
 import AccountController from "./infra/controller/AccountController";
+import { PaymentGatewayMemory } from "./infra/gateway/PaymentGateway";
 
 const httpServer = new ExpressAdapter();
 Registry.getInstance().provide("httpServer", httpServer);
@@ -15,4 +16,5 @@ Registry.getInstance().provide("mailerGateway", new MailerGatewayMemory());
 Registry.getInstance().provide("signup", new Signup());
 Registry.getInstance().provide("getAccount", new GetAccount());
 Registry.getInstance().provide("accountController", new AccountController());
+Registry.getInstance().provide("paymentGateway", new PaymentGatewayMemory());
 httpServer.listen(3000);

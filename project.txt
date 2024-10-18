@@ -15,5 +15,6 @@ Ator: Sistema
 Input: rideId, creditCardToken, amount
 Output: void
 
-	•	Deve simular o comportamento de um gateway de pagamento, sendo chamado a partir do use case FinishRide e fazendo o processamento do pagamento com base no cartão de crédito do passageiro
+	•	Deve simular o comportamento de um gateway de pagamento, sendo chamado a partir do use case FinishRide e 
+		fazendo o processamento do pagamento com base no cartão de crédito do passageiro
 	•	O status deve ser sempre success
