@@ -1,7 +1,7 @@
 import Position from "./Position";
 import DistanceCalculator from "../service/DistanceCalculator";
 import Coord from "../vo/Coord";
-import RideStatus, { RequestedStatus, RideStatusFactory } from "../vo/RideStatus";
+import RideStatus, { RideStatusFactory } from "../vo/RideStatus";
 import UUID from "../vo/UUID";
 
 // Entity
@@ -13,8 +13,10 @@ export default class Ride {
 	private to: Coord;
 	private status: RideStatus;
 	private date: Date;
+	private distance: number;
+	private fare: number
 
-	constructor (rideId: string, passengerId: string, fromLat: number, fromLong: number, toLat: number, toLong: number, status: string, date: Date, driverId: string = "") {
+	constructor (rideId: string, passengerId: string, fromLat: number, fromLong: number, toLat: number, toLong: number, status: string, date: Date, driverId: string = "", distance: number = 0, fare: number = 0) {
 		this.rideId = new UUID(rideId);
 		this.passengerId = new UUID(passengerId);
 		if (driverId) this.driverId = new UUID(driverId);
@@ -22,13 +24,17 @@ export default class Ride {
 		this.to = new Coord(toLat, toLong);
 		this.status = RideStatusFactory.create(status, this);
 		this.date = date;
+		this.distance = distance;
+		this.fare = fare;
 	}
 
 	static create (passengerId: string, fromLat: number, fromLong: number, toLat: number, toLong: number) {
 		const uuid = UUID.create();
 		const status = "requested";
 		const date = new Date();
-		return new Ride(uuid.getValue(), passengerId, fromLat, fromLong, toLat, toLong, status, date, "");
+		const distance = 0;
+		const fare = 0;
+		return new Ride(uuid.getValue(), passengerId, fromLat, fromLong, toLat, toLong, status, date, "", distance, fare);
 	}
 
 	getRideId () {
@@ -68,14 +74,18 @@ export default class Ride {
 		this.status.start();
 	}
 
-	getDistance (positions: Position[]) {
-		let distance = 0;
-		for (const [index, position] of positions.entries()) {
-			const nextPosition = positions[index + 1];
-			if (!nextPosition) continue;
-			distance += DistanceCalculator.calculate(position.coord, nextPosition.coord);
-		}
-		return distance;
+	finish (positions: Position[]) {
+		this.distance = DistanceCalculator.calculateByPositions(positions);
+		this.fare = this.distance * 2.1;
+		this.status.finish();
+	}
+
+	getDistance () {
+		return this.distance
+	}
+
+	getFare () {
+		return this.fare;
 	}
 
 	getDate () {

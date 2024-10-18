@@ -1,6 +1,18 @@
+import Position from "../entity/Position";
 import Coord from "../vo/Coord";
 
 export default class DistanceCalculator {
+
+	static calculateByPositions(positions: Position[]) {
+		let distance = 0;
+		for (const [index, position] of positions.entries()) {
+			const nextPosition = positions[index + 1];
+			if (!nextPosition) continue;
+			distance = this.calculate(position.coord, nextPosition.coord);
+		}
+		return distance;
+	}
+
 	static calculate (from: Coord, to: Coord) {
 		const earthRadius = 6371;
 		const degreesToRadians = Math.PI / 180;
